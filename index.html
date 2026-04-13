@@ -1,0 +1,661 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>PHDTI — PhD Type Indicator</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@300;400;500;600;700;900&family=Playfair+Display:wght@600;700;800&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #FFFFFF;
+  --bg-warm: #F5F3EF;
+  --bg-white: #FFFFFF;
+  --ink: #1A1A1A;
+  --ink2: #6B6B6B;
+  --ink3: #A0A0A0;
+  --ink4: #D4D4D4;
+  --accent: #FF5733;
+  --accent-soft: rgba(255,87,51,0.08);
+  --accent-med: rgba(255,87,51,0.15);
+  --green: #2ECC71;
+  --blue: #3B82F6;
+  --purple: #8B5CF6;
+  --yellow: #F59E0B;
+  --red: #E74C3C;
+  --radius: 20px;
+  --radius-sm: 14px;
+  --radius-xs: 10px;
+  --shadow-sm: 0 1px 3px rgba(0,0,0,0.04);
+  --shadow-md: 0 4px 16px rgba(0,0,0,0.06);
+  --shadow-lg: 0 8px 32px rgba(0,0,0,0.08);
+}
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+body{font-family:'Noto Sans SC',-apple-system,sans-serif;background:var(--bg);color:var(--ink);min-height:100vh;overflow-x:hidden;-webkit-font-smoothing:antialiased}
+
+.screen{display:none;min-height:100vh;flex-direction:column}
+.screen.active{display:flex}
+
+/* INTRO */
+.intro-screen{padding:0 24px;justify-content:center;align-items:center;text-align:center;position:relative;overflow:hidden}
+
+.intro-badge{display:inline-block;font-size:11px;font-weight:600;letter-spacing:1.5px;padding:6px 14px;border-radius:20px;background:var(--accent-soft);color:var(--accent);margin-bottom:24px;text-transform:uppercase}
+.intro-icon{font-size:72px;margin-bottom:20px;animation:breathe 4s ease-in-out infinite}
+@keyframes breathe{0%,100%{transform:scale(1)}50%{transform:scale(1.05)}}
+
+.intro-title{font-family:'Playfair Display',serif;font-size:38px;font-weight:800;letter-spacing:-1px;line-height:1.15;margin-bottom:6px}
+.intro-subtitle{font-size:16px;color:var(--ink2);margin-bottom:28px;font-weight:400}
+.intro-desc{font-size:14px;color:var(--ink3);line-height:1.8;max-width:300px;margin:0 auto 20px}
+
+.intro-dims{display:flex;gap:8px;justify-content:center;flex-wrap:wrap;margin-bottom:32px}
+.intro-dim{font-size:12px;padding:6px 14px;border-radius:20px;background:var(--bg-warm);color:var(--ink2);font-weight:500;border:1px solid rgba(0,0,0,0.04)}
+
+.intro-disclaimer{font-size:11px;color:var(--ink3);margin-bottom:32px;padding:10px 16px;background:var(--bg-warm);border-radius:var(--radius-xs);display:inline-block}
+
+.intro-start{display:block;width:100%;max-width:300px;padding:18px;border:none;border-radius:14px;background:var(--ink);color:#FFF;font-size:16px;font-weight:600;cursor:pointer;font-family:'Noto Sans SC',sans-serif;transition:transform .15s,opacity .15s;letter-spacing:.3px}
+.intro-start:active{transform:scale(.97);opacity:.85}
+
+.intro-footer{margin-top:40px;font-size:11px;color:var(--ink4);letter-spacing:.5px}
+
+/* QUESTION */
+.q-screen{padding:0 0 40px;background:var(--bg)}
+.q-top{padding:56px 24px 12px;display:flex;align-items:center;gap:14px;position:sticky;top:0;background:var(--bg);z-index:10}
+.q-back{width:38px;height:38px;border-radius:12px;background:var(--bg-warm);border:1px solid rgba(0,0,0,.05);color:var(--ink);font-size:18px;cursor:pointer;display:flex;align-items:center;justify-content:center}
+.q-back:active{background:var(--ink4)}
+.q-top-title{font-size:15px;font-weight:600;color:var(--ink2)}
+
+.q-progress{display:flex;gap:4px;padding:0 24px;margin-bottom:8px}
+.q-dot{flex:1;height:3px;border-radius:2px;background:var(--ink4);transition:background .35s}
+.q-dot.done{background:var(--ink)}
+.q-dot.now{background:var(--accent)}
+
+.q-body{padding:28px 24px 0}
+.q-counter{font-size:12px;color:var(--ink3);font-weight:500;letter-spacing:1px;margin-bottom:14px}
+.q-text{font-size:22px;font-weight:700;line-height:1.45;margin-bottom:8px;letter-spacing:-.2px}
+.q-hint{font-size:13px;color:var(--ink3);margin-bottom:28px;font-style:italic}
+
+.q-opts{display:flex;flex-direction:column;gap:10px;padding:0 24px 24px}
+.q-opt{background:var(--bg-white);border:1.5px solid rgba(0,0,0,.07);border-radius:var(--radius-sm);padding:18px 20px;font-size:15px;color:var(--ink);cursor:pointer;transition:all .15s;text-align:left;font-family:'Noto Sans SC',sans-serif;line-height:1.5;box-shadow:var(--shadow-sm)}
+.q-opt:active{transform:scale(.98);border-color:var(--ink);background:var(--bg-warm)}
+
+/* RESULT */
+.r-screen{padding:0 0 60px;background:var(--bg);align-items:center}
+
+.r-card{background:var(--bg);border-radius:0;padding:40px 24px 32px;box-shadow:none;border:none;position:relative;overflow:hidden;width:100%;max-width:480px;text-align:center}
+.r-bar{position:absolute;top:0;left:0;right:0;height:4px}
+.r-portrait{width:200px;height:auto;max-height:260px;object-fit:contain;margin:0 auto 20px;display:block;border-radius:16px}
+.r-emoji{font-size:56px;margin-bottom:14px;display:none}
+.r-code{font-family:'Playfair Display',serif;font-size:40px;font-weight:800;letter-spacing:3px;margin-bottom:2px}
+.r-name{font-size:18px;color:var(--ink2);font-weight:600;margin-bottom:6px}
+.r-tagline{font-size:14px;color:var(--ink3);font-style:italic;margin-bottom:24px}
+.r-divider{width:40px;height:2px;background:var(--ink4);margin:0 auto 24px}
+.r-desc{font-size:14px;color:var(--ink2);line-height:1.9;margin-bottom:28px;text-align:left}
+
+.r-dims{margin-bottom:28px}
+.r-dim-row{display:flex;align-items:center;gap:10px;margin-bottom:12px}
+.r-dim-label{font-size:12px;color:var(--ink3);width:28px;text-align:center;font-weight:600}
+.r-dim-track{flex:1;height:6px;background:var(--bg-warm);border-radius:3px;position:relative;overflow:hidden}
+.r-dim-fill{position:absolute;top:0;height:100%;border-radius:3px;transition:width 1s ease}
+.r-dim-fill.left{left:0}
+.r-dim-fill.right{right:0}
+.r-dim-pct{font-size:11px;color:var(--ink3);width:32px;text-align:center;font-weight:500}
+
+.r-tags{display:flex;flex-wrap:wrap;justify-content:center;gap:6px;margin-bottom:28px}
+.r-tag{font-size:12px;padding:6px 14px;border-radius:20px;background:var(--bg-warm);color:var(--ink2);font-weight:500}
+
+.r-brand{font-size:11px;color:var(--ink4);letter-spacing:1px;margin-top:8px}
+
+.r-btns{display:flex;gap:10px;margin-top:20px;width:100%;max-width:480px;padding:0 24px}
+.r-btn{flex:1;padding:16px;border-radius:14px;border:none;font-size:14px;font-weight:600;cursor:pointer;font-family:'Noto Sans SC',sans-serif;transition:transform .15s}
+.r-btn:active{transform:scale(.97)}
+.r-btn-dark{background:var(--ink);color:#FFF}
+.r-btn-light{background:var(--bg-warm);color:var(--ink);border:1px solid rgba(0,0,0,.06)}
+
+/* Share card (hidden, for screenshot) */
+.share-card{position:fixed;left:-9999px;top:0;width:375px;background:#FFF;padding:40px 28px 32px;text-align:center;z-index:-1}
+.share-card .r-portrait{width:180px;max-height:240px}
+.share-card .r-code{font-family:'Playfair Display',serif;font-size:36px;font-weight:800;letter-spacing:3px;margin-bottom:2px}
+.share-card .r-name{font-size:17px;color:var(--ink2);font-weight:600;margin-bottom:4px}
+.share-card .r-tagline{font-size:13px;color:var(--ink3);font-style:italic;margin-bottom:16px}
+.share-card .r-divider{width:40px;height:2px;background:var(--ink4);margin:0 auto 16px}
+.share-card .r-dims{margin-bottom:20px}
+.share-card .r-dim-row{display:flex;align-items:center;gap:8px;margin-bottom:10px}
+.share-card .r-dim-label{font-size:11px;width:24px}
+.share-card .r-dim-track{flex:1;height:5px;background:#F0EDE8;border-radius:3px;position:relative;overflow:hidden}
+.share-card .r-dim-fill{position:absolute;top:0;height:100%;border-radius:3px}
+.share-card .r-tags{display:flex;flex-wrap:wrap;justify-content:center;gap:5px;margin-bottom:20px}
+.share-card .r-tag{font-size:11px;padding:4px 10px;border-radius:16px;background:#F5F3EF;color:var(--ink2)}
+.share-card .r-brand{font-size:11px;color:var(--ink4);letter-spacing:1px}
+.share-card .share-qr{margin-top:16px;font-size:11px;color:var(--ink3)}
+
+/* Share overlay */
+.share-overlay{display:none;position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,0.6);z-index:1000;justify-content:center;align-items:center;padding:20px}
+.share-overlay.active{display:flex}
+.share-preview{background:#FFF;border-radius:16px;padding:20px;max-width:340px;width:100%;text-align:center;max-height:90vh;overflow-y:auto}
+.share-preview img{width:100%;border-radius:8px;margin-bottom:16px;box-shadow:0 2px 12px rgba(0,0,0,0.1)}
+.share-preview-title{font-size:15px;font-weight:600;margin-bottom:4px}
+.share-preview-hint{font-size:12px;color:var(--ink3);margin-bottom:16px}
+.share-preview-btns{display:flex;gap:8px}
+.share-preview-btns button{flex:1;padding:12px;border-radius:12px;border:none;font-size:13px;font-weight:600;cursor:pointer;font-family:'Noto Sans SC',sans-serif}
+.share-save{background:var(--ink);color:#FFF}
+.share-close{background:#F0F0F0;color:var(--ink)}
+
+@keyframes fadeUp{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:translateY(0)}}
+.anim{animation:fadeUp .45s ease forwards}
+.anim-d1{animation-delay:.06s;opacity:0}
+.anim-d2{animation-delay:.12s;opacity:0}
+.anim-d3{animation-delay:.18s;opacity:0}
+
+/* ===== RESPONSIVE ===== */
+
+/* Small phones (iPhone SE, 375px and below) */
+@media (max-width: 380px) {
+  .intro-title { font-size: 32px; }
+  .intro-subtitle { font-size: 14px; }
+  .intro-desc { font-size: 13px; }
+  .intro-dims { gap: 6px; }
+  .intro-dim { font-size: 11px; padding: 5px 10px; }
+  .intro-screen { padding: 0 18px; }
+
+  .q-body { padding: 20px 18px 0; }
+  .q-text { font-size: 19px; }
+  .q-opts { padding: 0 18px 20px; gap: 8px; }
+  .q-opt { padding: 14px 16px; font-size: 14px; }
+  .q-top { padding: 50px 18px 10px; }
+
+  .r-screen { padding: 30px 16px 50px; }
+  .r-card { padding: 32px 20px 24px; }
+  .r-portrait { width: 160px; max-height: 210px; }
+  .r-code { font-size: 32px; letter-spacing: 2px; }
+  .r-name { font-size: 16px; }
+  .r-desc { font-size: 13px; line-height: 1.8; }
+  .r-tag { font-size: 11px; padding: 5px 10px; }
+  .r-btns { gap: 8px; }
+  .r-btn { padding: 14px; font-size: 13px; }
+}
+
+/* Standard phones (376px - 428px) */
+@media (min-width: 381px) and (max-width: 428px) {
+  .r-portrait { width: 180px; max-height: 240px; }
+  .r-code { font-size: 36px; }
+}
+
+/* Large phones & small tablets (429px - 768px) */
+@media (min-width: 429px) and (max-width: 768px) {
+  .r-portrait { width: 220px; max-height: 290px; }
+  .intro-screen { padding: 0 32px; }
+  .q-body { padding: 28px 32px 0; }
+  .q-opts { padding: 0 32px 24px; }
+}
+
+/* Tablets and desktop (769px+) */
+@media (min-width: 769px) {
+  body { max-width: 480px; margin: 0 auto; box-shadow: 0 0 40px rgba(0,0,0,0.06); min-height: 100vh; }
+  .r-portrait { width: 240px; max-height: 320px; }
+  .intro-title { font-size: 42px; }
+}
+
+/* Safe area for notched phones (iPhone X+) */
+@supports (padding-bottom: env(safe-area-inset-bottom)) {
+  .r-screen { padding-bottom: calc(60px + env(safe-area-inset-bottom)); }
+  .q-screen { padding-bottom: calc(40px + env(safe-area-inset-bottom)); }
+  .q-top { padding-top: calc(56px + env(safe-area-inset-top)); }
+  .intro-screen { padding-top: env(safe-area-inset-top); padding-bottom: env(safe-area-inset-bottom); }
+}
+
+/* Prevent text overflow on any screen */
+.q-text, .r-desc, .r-tagline, .r-name { word-break: break-word; overflow-wrap: break-word; }
+
+/* Touch-friendly tap targets (min 44px) */
+.q-opt { min-height: 48px; }
+.q-back, .intro-start, .r-btn { min-height: 44px; }
+
+/* Landscape phone - make question area scrollable */
+@media (max-height: 600px) and (orientation: landscape) {
+  .intro-screen { padding-top: 20px; padding-bottom: 20px; }
+  .intro-icon { font-size: 48px; margin-bottom: 12px; }
+  .intro-title { font-size: 28px; }
+  .intro-footer { margin-top: 16px; }
+  .r-portrait { width: 140px; max-height: 180px; }
+}
+/* Enriched result sections */
+.r-section{margin-top:28px;text-align:left;width:100%}
+.r-section-title{font-size:13px;font-weight:600;color:var(--ink);margin-bottom:14px;display:flex;align-items:center;gap:6px}
+.r-section-icon{font-size:15px}
+
+/* Powers & Weakness */
+.r-pw{display:flex;gap:12px;margin-bottom:0}
+.r-pw-col{flex:1;padding:16px;border-radius:var(--radius-xs);font-size:13px;line-height:1.8}
+.r-pw-col.power{background:rgba(46,204,113,0.06)}
+.r-pw-col.weak{background:rgba(231,76,60,0.06)}
+.r-pw-label{font-size:11px;font-weight:600;margin-bottom:8px;letter-spacing:0.5px}
+.r-pw-col.power .r-pw-label{color:var(--green)}
+.r-pw-col.weak .r-pw-label{color:var(--red)}
+.r-pw-item{color:var(--ink2);margin-bottom:6px;padding-left:12px;position:relative}
+.r-pw-item::before{content:"";position:absolute;left:0;top:8px;width:4px;height:4px;border-radius:50%}
+.r-pw-col.power .r-pw-item::before{background:var(--green)}
+.r-pw-col.weak .r-pw-item::before{background:var(--red)}
+
+/* Radar chart */
+.r-radar-wrap{display:flex;justify-content:center;margin:8px 0 0}
+.r-radar-wrap canvas{max-width:260px;width:100%;height:auto}
+
+/* Relationship cards */
+.r-rel{display:flex;gap:10px;flex-wrap:wrap}
+.r-rel-card{flex:1;min-width:calc(50% - 5px);background:var(--bg-warm);border-radius:var(--radius-xs);padding:14px;font-size:12px}
+.r-rel-type{font-size:11px;font-weight:600;margin-bottom:6px;letter-spacing:0.5px}
+.r-rel-type.best{color:var(--green)}
+.r-rel-type.worst{color:var(--red)}
+.r-rel-name{font-size:14px;font-weight:600;color:var(--ink);margin-bottom:4px}
+.r-rel-why{color:var(--ink3);line-height:1.6}
+
+/* Tips */
+.r-tips-list{display:flex;flex-direction:column;gap:10px}
+.r-tip{background:var(--bg-warm);border-radius:var(--radius-xs);padding:14px 16px;font-size:13px;color:var(--ink2);line-height:1.7;position:relative;padding-left:32px}
+.r-tip-num{position:absolute;left:14px;top:14px;font-size:12px;font-weight:600;color:var(--ink3)}
+
+/* Celeb */
+.r-celeb{background:var(--bg-warm);border-radius:var(--radius-xs);padding:16px;font-size:13px;color:var(--ink2);line-height:1.7}
+
+@media(max-width:380px){
+  .r-pw{flex-direction:column;gap:8px}
+  .r-rel-card{min-width:100%}
+  .r-section{margin-top:22px}
+}
+
+</style>
+</head>
+<body>
+
+<div class="screen intro-screen active" id="s-intro">
+  <div class="intro-badge anim">PhD Type Indicator</div>
+  <div class="intro-icon anim anim-d1">🧬</div>
+  <div class="intro-title anim anim-d1">PHDTI</div>
+  <div class="intro-subtitle anim anim-d2">科研把你搞成了什么人？</div>
+  <div class="intro-desc anim anim-d2">
+    12 道来自真实科研生活的灵魂拷问<br>
+    4 个维度 · 16 种实验室人格
+  </div>
+  <div class="intro-dims anim anim-d3">
+    <span class="intro-dim">卷 vs 躺</span>
+    <span class="intro-dim">显 vs 隐</span>
+    <span class="intro-dim">刚 vs 脆</span>
+    <span class="intro-dim">信 vs 虚</span>
+  </div>
+  <div class="intro-disclaimer anim anim-d3">⚠️ 纯属科研人自嘲娱乐，请勿用于毕业答辩、基金申请或师生调解</div>
+  <br>
+  <button class="intro-start anim anim-d3" onclick="startTest()">开始测试</button>
+  <div class="intro-footer anim anim-d3">LabBricker · 懂科研，更懂你</div>
+</div>
+
+<div class="screen q-screen" id="s-q">
+  <div class="q-top">
+    <button class="q-back" onclick="goIntro()">←</button>
+    <div class="q-top-title">PHDTI 测试</div>
+  </div>
+  <div class="q-progress" id="q-progress"></div>
+  <div class="q-body">
+    <div class="q-counter" id="q-counter"></div>
+    <div class="q-text" id="q-text"></div>
+    <div class="q-hint" id="q-hint"></div>
+  </div>
+  <div class="q-opts" id="q-opts"></div>
+</div>
+
+<div class="screen r-screen" id="s-r">
+  <div class="r-card" id="r-card"></div>
+  <div class="r-btns" id="r-btns">
+    <button class="r-btn r-btn-light" onclick="goIntro()">再测一次</button>
+    <button class="r-btn r-btn-dark" onclick="shareResult()">分享结果</button>
+  </div>
+</div>
+
+<!-- Share overlay -->
+<div class="share-overlay" id="share-overlay" onclick="closeShare(event)">
+  <div class="share-preview">
+    <div class="share-preview-title">你的 PHDTI 结果卡片</div>
+    <div class="share-preview-hint">长按图片保存，分享给你的同门</div>
+    <img id="share-img" src="" alt="PHDTI result">
+    <div class="share-preview-btns">
+      <button class="share-close" onclick="closeShare()">关闭</button>
+      <button class="share-save" onclick="downloadShare()">保存图片</button>
+    </div>
+  </div>
+</div>
+
+<!-- Hidden share card for screenshot -->
+<div class="share-card" id="share-card"></div>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+<script>
+// PHDTI Enriched Types v2 — fuller descriptions, richer relationship reasons, diversified pairings
+var types = {
+  GLTF:{name:"学术永动机",emoji:"⚡",accent:"#FF5733",tagline:"这个实验室没有我会停转",
+    desc:"你是那种周末不做实验就浑身难受的人。手机备忘录里全是实验方案，做梦都在跑 Western Blot。组会上你永远是那个准备最充分的，导师夸你你觉得还不够好。你的危险不在于不够努力，而在于你根本不知道怎么停下来。总有一天身体会替你按暂停键——到时候就不是你能选择的了。",
+    powers:["执行力碾压全组，别人还在计划你已经出数据了","天然领导力，组会上自带主角光环","抗压能力极强，越忙越兴奋"],
+    weakness:["不会休息，身体迟早发出警报","容易忽视团队成员的感受","把自我价值完全绑定在科研产出上"],
+    bestMatch:"GQTF",bestMatchWhy:"你俩是实验室最强CP——你在前面冲锋陷阵带节奏，TA在后方闷声出数据。你最怕的是团队跟不上你的节奏，而沉默收割机是唯一一个不需要你催的人。你们之间不需要太多交流，一个眼神就知道对方在干嘛。",
+    worstMatch:"CQTN",worstMatchWhy:"你最受不了的就是有能力但不用的人。职业混子每天准时五点走的时候，你的血压会比实验数据波动还大。你觉得TA在浪费生命，TA觉得你在透支生命——你们永远说服不了对方。",
+    radar:[95,88,75,90,98],
+    celeb:"居里夫人 — 同样的执着，同样的停不下来，希望你比她多注意身体",
+    tips:["学会委派任务，不是所有实验都需要你亲手做","设定一个强制下班时间，身体是你最重要的实验器材","多问问师弟师妹的想法，而不是直接给方案"],
+    tags:["#卷王之王","#课题组顶梁柱","#拿什么拯救我的颈椎","#CNS我来了"]},
+
+  GLTN:{name:"科研表演家",emoji:"🎭",accent:"#8B5CF6",tagline:"看起来在冲 CNS，其实在等退路",
+    desc:"你的朋友圈发出来像Nature编辑，私下的备忘录里写的是「今天也想辞职」。组会汇报你永远PPT最精美、表达最流畅，但你心里清楚，presentation的功夫比真正做实验的功夫多了不止一倍。你不是懒，你是怕——怕停下表演之后，发现自己其实什么都没有。你最需要的是一面镜子，而不是一个舞台。",
+    powers:["包装能力极强，你的汇报总是全组最好看的","社交敏锐度高，知道什么时候该说什么话","适应力强，什么方向都能快速上手"],
+    weakness:["活在别人的评价体系里，内心极度不安全","花太多精力在表演而不是真正做事","害怕被看穿，所以从不展示脆弱"],
+    bestMatch:"GQSF",bestMatchWhy:"暗处小火苗是你最需要的人——TA不会因为你的光鲜而仰望你，也不会戳穿你。TA的沉默和真诚会让你慢慢意识到，不表演也可以被接受。你在TA面前会卸下面具，因为TA从来不看你的面具。",
+    worstMatch:"CQTF",worstMatchWhy:"佛系扫地僧是你最害怕的镜子——TA什么都不做但什么都看得透。你花了无数精力维持的人设，在TA面前毫无意义。TA一句轻描淡写的评论就能让你破防，因为TA说的都是对的。",
+    radar:[78,65,90,55,80],
+    celeb:"薛定谔 — 你的状态也是叠加的，同时是学霸也是演员，打开盒子之前谁也不知道",
+    tips:["试着做一次不完美的汇报，你会发现天不会塌","问自己：如果没人看到，我还会做这件事吗","找一个你可以不表演的人，哪怕只有一个"],
+    tags:["#人设管理大师","#焦虑驱动型选手","#简历很好看内心很空虚","#最怕被看穿"]},
+
+  GLSF:{name:"热血大冤种",emoji:"🔥",accent:"#E74C3C",tagline:"一边哭一边卷，感动的只有自己",
+    desc:"你在实验室哭过的次数比别人做实验的次数还多。但哭完你会擦干眼泪，打开notebook写下「第n+1次尝试」。导师骂你的时候你红着眼眶说「好的老师我改」，转头就钻进实验室加班到凌晨。你的热爱是真的，脆弱也是真的，但你从来不允许脆弱赢过热爱。唯一的问题是——你太舍得对自己下手了。",
+    powers:["真诚，你对科研的感情是实验室里最真实的","感染力强，你的热情能带动身边的人","韧性惊人，哭完擦干眼泪继续做"],
+    weakness:["太容易受伤，别人一句话就能让你难过一天","分不清热爱和自我感动的边界","不会保护自己，总是付出最多回报最少"],
+    bestMatch:"CQTF",bestMatchWhy:"佛系扫地僧是你最好的灭火器——不是灭掉你的热情，而是在你快要烧毁自己的时候帮你降温。你哭的时候TA不会劝你别哭，只会安静地坐在旁边等你哭完，然后说一句「要不先去吃饭」。这种稳是你最需要的。",
+    worstMatch:"GQTN",worstMatchWhy:"冷血工具人会让你怀疑科研的意义。你在实验台前热泪盈眶的时候，TA头都不抬地说「你这个protocol有问题」。你觉得TA没有灵魂，TA觉得你情绪太多影响效率。你们对科研的理解差了一个宇宙。",
+    radar:[72,45,82,70,85],
+    celeb:"屠呦呦 — 在所有人放弃的时候还在坚持，靠的就是那股不服输的劲",
+    tips:["给自己设一个情绪冷却期，实验失败后24小时内不做决定","你的价值不取决于实验结果，重复三遍","学会说「我需要帮助」，这不是示弱"],
+    tags:["#科研恋爱脑","#实验虐我千百遍","#哭完继续做","#导师看了都心疼"]},
+
+  GLSN:{name:"科研孔雀",emoji:"🦚",accent:"#F59E0B",tagline:"朋友圈很卷，私下很丧",
+    desc:"你的实验台永远是全组最整洁的——不是因为你爱整理，是因为你要拍照发小红书。你的论文配色方案比论文内容花的时间还长。你不是不努力，你只是把80%的精力花在了让努力「看起来好看」上面。私下的你其实很焦虑，因为你比谁都清楚，真正的数据没有朋友圈那么好看。",
+    powers:["视觉呈现力强，数据图做得比谁都好看","个人品牌意识超前，人脉广","社交资源整合能力优秀"],
+    weakness:["内外不一致的焦虑越来越重","实际产出与形象不匹配","容易在比较中迷失自己"],
+    bestMatch:"GQTF",bestMatchWhy:"沉默收割机有你最缺的东西——实打实的成果。你有包装能力，TA有硬核内容，合在一起就是一篇高分paper。更重要的是，TA不在意外表，你在TA身边能少一点表演的压力。",
+    worstMatch:"GQSF",worstMatchWhy:"暗处小火苗的存在让你很不舒服——TA什么都不展示，但默默做出的东西有时候比你好。你花了无数时间经营的人设，TA一句话不说就能衬得毫无意义。你知道TA比你真实，这让你更焦虑。",
+    radar:[60,50,88,45,65],
+    celeb:"特斯拉 — 同样的表演欲，同样的才华，同样的不被完全理解",
+    tips:["试着一周不发朋友圈，看看自己的焦虑从何而来","把做PPT的时间分一半给做实验","接受不完美的自己比展示完美的人设更轻松"],
+    tags:["#精修型科研人","#朋友圈学术网红","#内心其实很虚","#包装胜于内容"]},
+
+  GQTF:{name:"沉默收割机",emoji:"🗡️",accent:"#1A1A1A",tagline:"不说话，直接发 paper",
+    desc:"你上次跟同事闲聊是什么时候？你自己大概也记不清了。你的世界很简单：实验、数据、论文，其他的都是噪音。别人还在茶水间八卦的时候你已经做完了三组重复，别人还在纠结选哪个课题的时候你已经在写Discussion了。你的沉默不是因为没话说，是因为说话太浪费时间。但有时候，你的沉默也在推开那些想靠近你的人。",
+    powers:["专注力无敌，一旦进入状态谁都打扰不了","执行效率极高，从不拖延","不受外界干扰地持续产出"],
+    weakness:["社交隔离可能错过重要信息和机会","情感连接缺失，被误解为冷漠","长期独处可能导致视野变窄"],
+    bestMatch:"CLTF",bestMatchWhy:"快乐课题组长是唯一一个不会被你的冷吓跑的人。TA会在你埋头做实验的时候给你带杯咖啡，不多说话，放下就走。慢慢地你发现，有个人惦记着你的感觉还挺好的。TA补你的人味儿，你补TA的产出，天作之合。",
+    worstMatch:"CLSN",worstMatchWhy:"摸鱼界显眼包是你的噩梦——TA总是在你专注的时候跑过来聊天，声音大到整个实验室都听得见。你已经暗示了八百遍你不想说话，但TA就是get不到。你戴上降噪耳机的那天，就是你俩关系的终点。",
+    radar:[92,90,30,95,90],
+    celeb:"张益唐 — 沉默数十年，一鸣惊人",
+    tips:["每周至少跟一个同事闲聊10分钟，信息差会害死你","学术会议上主动介绍自己的工作，好酒也怕巷子深","偶尔关心一下身边人，你的温暖比你想象的更有力量"],
+    tags:["#真·大佬","#闷声发大财","#社交是浪费时间","#用paper说话"]},
+
+  GQTN:{name:"冷血工具人",emoji:"🤖",accent:"#6B6B6B",tagline:"高效但灵魂已抽离",
+    desc:"你每天准时到实验室，打开电脑，按照to-do list一条条执行，到点下班。情绪？什么情绪？你已经很久没有为一个结果开心过了，也很久没有为一次失败难过过了。同事偶尔开玩笑说你像个机器人，你面无表情地说「谢谢」——他们分不清你是在幽默还是在陈述事实。你不痛苦，但你也想不起来上次什么时候快乐。",
+    powers:["情绪零波动，永远不会因为心情影响工作","流程化执行能力极强","稳定性极高，是团队里最靠谱的执行者"],
+    weakness:["找不到意义感，长期下去会更空洞","内心空洞可能演变成职业倦怠","人际关系浅薄，没有真正的交心朋友"],
+    bestMatch:"CLSF",bestMatchWhy:"科研哭包是你最不可能想到的搭档，但TA可能是唯一能「唤醒」你的人。TA为了一个实验结果哭得稀里哗啦的时候，你会突然想起自己也曾经为科研激动过。TA的眼泪是你情感的除颤器——虽然你嘴上不说，但你会开始怀念有感觉的日子。",
+    worstMatch:"GLSF",worstMatchWhy:"热血大冤种的存在对你来说像一面不想照的镜子——TA在燃烧，你在结冰。TA每天哭着笑着地做实验让你觉得特别累，但你更害怕的是，TA让你想起了你已经丢掉的那些东西。",
+    radar:[85,92,25,40,88],
+    celeb:"冯·诺依曼 — 计算精确，执行完美，人味儿少了点",
+    tips:["问自己：如果明天不用做科研了，你会感到轻松还是失落","尝试一个跟科研无关的爱好，找回一点人味儿","效率高是优势，但别让自己变成一台没有感情的机器"],
+    tags:["#人形流水线","#情绪已关闭","#效率怪物","#问就是在做"]},
+
+  GQSF:{name:"暗处小火苗",emoji:"🕯️",accent:"#3B82F6",tagline:"默默努力默默崩溃默默自愈",
+    desc:"你的实验记录本写得比谁都认真，但从来不让别人看。你有很多想法，但组会上从来没说出来过——不是不想说，是话到嘴边就咽回去了。你回宿舍的路上会偷偷哭，到了宿舍洗把脸又变成「我没事」的样子。你对科研有执着的爱，但你把这份爱藏得太深了。你最大的遗憾可能不是实验失败，而是那些永远没有开口的时刻。",
+    powers:["观察力细腻，能发现别人忽略的细节","有深度思考的习惯，想法往往很有价值","默默积累的厚度，厚积薄发型选手"],
+    weakness:["不敢表达自己的想法和需求","过度自我否定，总觉得自己不够好","容易被忽略，错过该属于你的机会"],
+    bestMatch:"CLTF",bestMatchWhy:"快乐课题组长不会逼你说话，但TA会创造一个让你想说话的环境。TA的笑容是没有攻击性的，TA的关心是不带压力的。在TA身边你会慢慢发现，原来开口也没那么可怕。TA会是第一个认真听你说完一整段话的人。",
+    worstMatch:"GLSN",worstMatchWhy:"科研孔雀占据了所有的聚光灯，而你连阴影都不敢站。TA发朋友圈收获几十个赞的时候，你默默做出来的实验连个人知道都没有。你不嫉妒TA，但TA的存在让你更觉得自己是个透明人。",
+    radar:[70,55,28,68,75],
+    celeb:"芭芭拉·麦克林托克 — 被忽视数十年，最终获得诺贝尔奖",
+    tips:["下次组会试着多说一句话，你的想法值得被听到","找一个信任的前辈定期聊聊，你需要被看见","写一个成就日记，记录每一个小进步"],
+    tags:["#宝藏型选手","#敏感但倔强","#独自消化一切","#值得被看见"]},
+
+  GQSN:{name:"内耗永动机",emoji:"🌀",accent:"#8B5CF6",tagline:"一直在想要不要 quit，但还在做",
+    desc:"你的脑子里同时在开三个会——一个在讨论今天的实验怎么做，一个在辩论要不要读博，还有一个在搜索「科研转行做什么」。你的浏览器永远有二十个标签页，一半是文献一半是招聘网站。最讽刺的是，你花在纠结上的时间足够多做三组实验了。你不是没有能力，你只是被自己困住了。",
+    powers:["深度自省能力，比大多数人更了解自己","多角度思考，能预见别人忽略的风险","一旦做了决定，执行力其实不差"],
+    weakness:["决策瘫痪，纠结本身就在消耗你最宝贵的精力","精力被内耗吞噬，实际产出远低于你的能力","行动力被想法绑架，想得太多做得太少"],
+    bestMatch:"GLTF",bestMatchWhy:"学术永动机是你的解药——不是因为TA有多厉害，而是TA根本不纠结。你在那边想了三天要不要做的实验，TA上午就做完了。跟TA在一起你会被拖着往前走，没时间想那么多。有时候你需要的不是想清楚，而是先跑起来。",
+    worstMatch:"CQSN",worstMatchWhy:"科研幽灵是你的反面教材，也是你最害怕的未来。TA就是那个纠结到最后什么都不想了的版本。你看着TA空洞的眼神会汗毛直竖——你怕自己哪天也变成那样。但你又控制不住去观察TA，像在照一面不想面对的镜子。",
+    radar:[58,40,35,45,50],
+    celeb:"达尔文 — 纠结了二十年才发表《物种起源》，你还有时间",
+    tips:["给自己设一个决策截止日，到了就不再想了","把纠结的时间用来做一组实验，做了再说","找一个行动派朋友，让 TA 拉着你跑"],
+    tags:["#精神内耗冠军","#纠结王","#做了后悔不做也后悔","#能不能别想了先做"]},
+
+  CLTF:{name:"快乐课题组长",emoji:"☀️",accent:"#2ECC71",tagline:"实验随缘，但我真心热爱科学",
+    desc:"你的实验台上有一盆绿萝、一个手办、和一包没拆完的零食。你的实验进度在全组倒数第三，但你是全组最快乐的人。你真的喜欢科研——只是喜欢的方式比较佛。你觉得好的结果自然会来，急也没用。导师对你又爱又恨：爱你因为你活跃了气氛，恨你因为催你做实验像催债一样难。",
+    powers:["天然感染力，跟你待在一起心情会变好","跨组社交能力强，信息渠道广","让所有人都舒服的氛围感，是团队的粘合剂"],
+    weakness:["容易满足于现状，缺乏紧迫感","可能错过需要主动争取的关键机会","乐观有时会变成对问题的忽视"],
+    bestMatch:"GQTF",bestMatchWhy:"沉默收割机需要你——虽然TA永远不会承认。你是唯一一个不被TA的冷拒之门外的人，因为你根本不在意被拒绝。你给TA带咖啡、给TA讲八卦、在TA闷头做实验的时候陪着刷手机。TA补你的数据，你补TA的人生。",
+    worstMatch:"GLTF",worstMatchWhy:"学术永动机看你的眼神像老师看学渣——充满了「你怎么一点都不着急」的费解。你在那边浇花的时候TA已经跑完三组实验了。你觉得TA不懂享受生活，TA觉得你在浪费天赋。你们谁也说服不了谁。",
+    radar:[55,78,95,60,50],
+    celeb:"费曼 — 同样的好奇心，同样的乐天，同样地让周围人快乐",
+    tips:["快乐是你的超能力，但偶尔也需要给自己加点紧迫感","把你的社交能力用在学术交流上，你会发现意想不到的合作","设一个小目标，比如这个月多做两组实验"],
+    tags:["#实验室阳光","#快乐科研人","#佛系但有心","#相信过程"]},
+
+  CLTN:{name:"实验室段子手",emoji:"🎪",accent:"#FF5733",tagline:"来都来了，不如整点乐子",
+    desc:"你的课题组微信群里60%的表情包是你发的。别人组会汇报在讲数据，你在讲段子——关键是导师也笑了。你对科研没什么执念，但你把「上班」这件事变成了一场大型真人秀。你的实验数据一般般，但你的群众基础全组第一。你活着不是为了发paper，是为了让这段荒诞的日子不那么难熬。",
+    powers:["幽默感是稀缺资源，你天生就有","团队粘合剂，没你实验室会无聊很多","逆境中的乐观，别人崩溃的时候你还能笑"],
+    weakness:["用幽默逃避真正的问题","不容易被认真对待，导师可能低估你","产出偏低，快乐不能代替数据"],
+    bestMatch:"GQTF",bestMatchWhy:"你和沉默收割机在一起画面特别好笑——你在那边滔滔不绝讲段子，TA头都不抬地做实验，但你知道TA在笑。TA是那种听了你的话嘴角微微上扬然后继续干活的人。你负责让实验室不那么丧，TA负责产出，各司其职。",
+    worstMatch:"GLTF",worstMatchWhy:"学术永动机听你讲笑话的时候表情写着「你怎么还不去做实验」。你每开一个玩笑，TA就觉得你在浪费科研经费。你觉得TA活得像个没有灵魂的卷王，TA觉得你就是实验室里的噪音。你们的频道永远对不上。",
+    radar:[40,82,95,35,45],
+    celeb:"搞笑诺贝尔奖得主们 — 用不正经的方式做正经的事",
+    tips:["幽默是你的盔甲，但别让它变成你的牢笼","每天留两小时认真做实验，你的能力比你展示的多","试着用你的段子才能做一次精彩的学术报告"],
+    tags:["#快乐摸鱼","#实验室开心果","#段子比数据多","#人生苦短何必太卷"]},
+
+  CLSF:{name:"科研哭包",emoji:"🥹",accent:"#E74C3C",tagline:"爱哭但是真的很喜欢啊",
+    desc:"你的纸巾消耗速度是实验试剂的两倍。实验成功了你哭——「太不容易了」；实验失败了你也哭——「我是不是真的不行」；导师夸你你也哭——「呜呜呜终于被认可了」。同事都习惯了，看你哭只会问「这次是开心还是难过」。你的感情是实验室里最真实的存在，在一群假装没事的人里面，你是唯一一个诚实的。",
+    powers:["共情能力极强，是同门的情感支柱","情绪感知敏锐，能察觉团队氛围的细微变化","真诚，你的感情是最不掺假的"],
+    weakness:["情绪波动太大，影响工作连续性","容易被环境和他人的情绪影响","在需要理性决策的时候可能被感情带偏"],
+    bestMatch:"GQTF",bestMatchWhy:"沉默收割机是你的定海神针。你在那边哭得昏天黑地的时候，TA不会手足无措，也不会说「别哭了」这种废话——TA只会默默把你做坏的实验重新做一遍，然后把数据发给你。TA用行动代替安慰，这比一万句「没关系」都管用。",
+    worstMatch:"GQTN",worstMatchWhy:"冷血工具人的存在让你的眼泪更多了。你在实验台前红着眼眶的时候，TA面无表情地说「数据不支持你的假设」，没有任何情感铺垫。TA不是故意的，TA只是真的感受不到你的痛苦——这让你更痛苦。",
+    radar:[50,30,80,55,48],
+    celeb:"珍·古道尔 — 对所有生命都充满感情，包括实验室里的",
+    tips:["哭不丢人，但哭完记得喝口水然后继续做","找一个情绪稳定的搭档，你们会是很好的组合","把你的共情能力用在写论文的Discussion部分，会写得特别好"],
+    tags:["#玻璃心但满腔热爱","#哭是我的解压方式","#被实验PUA但不离不弃","#拥抱一下"]},
+
+  CLSN:{name:"摸鱼界显眼包",emoji:"🐠",accent:"#F59E0B",tagline:"最大的成果是同事关系好",
+    desc:"你知道实验室每个人的生日、恋爱状态、和午饭偏好。你的工位是全组的社交中心——别人路过都要停下来聊两句。你的实验记录本一半是实验数据一半是涂鸦，上面还贴着一张奶茶小票。导师每次走过来你都秒切回文献窗口，切换速度比你做实验的速度快三倍。你知道自己在摸鱼，但你也知道，是你让这个实验室有了温度。",
+    powers:["人缘极好，跨组信息通道","实验室氛围制造机，没你会很无聊","社交天赋可以转化为职场优势"],
+    weakness:["实际产出偏低，导师信任度不足","可能面临延毕风险","社交太多会变成逃避工作的借口"],
+    bestMatch:"GQSF",bestMatchWhy:"暗处小火苗是你最意想不到的好搭档——你社交能力爆表但不出活，TA闷头做事但没人知道。你可以帮TA把好的工作「推出去」，TA的认真也能带着你稍微做点正事。你是TA的扩音器，TA是你的anchor。",
+    worstMatch:"GLTF",worstMatchWhy:"学术永动机看你在聊天的时候，眼神里的失望可以写成一篇nature letter。你每次端着奶茶路过TA工位的时候，TA都会叹一口气——那个叹气声你已经听了一百遍了。你觉得TA不懂生活，TA觉得你不懂科研。",
+    radar:[30,70,98,25,28],
+    celeb:"实验室里那只被大家养的猫 — 不干活但所有人都喜欢",
+    tips:["把社交能力用在正事上，比如帮课题组拉横向合作","每天至少认真做两小时实验，对得起自己的学位","你的人脉是真正的资产，但需要学术实力来支撑"],
+    tags:["#社交天赋点满","#实验天赋？什么天赋","#导师催我我催自己","#能毕业吗？随缘吧"]},
+
+  CQTF:{name:"佛系扫地僧",emoji:"🧘",accent:"#2ECC71",tagline:"看着躺平，其实暗中观察一切",
+    desc:"你从不加班，从不发朋友圈，从不跟人争论。但每次组会你偶尔说一句话，全场安静三秒钟——因为你说到了点子上。你的实验进度看起来一般，但你从来不返工。你不卷是因为你清楚地知道什么值得做、什么是浪费时间。你是实验室里唯一一个没有被PUA的人，因为你的精神防线比-80度冰箱还硬。",
+    powers:["洞察力极强，看问题比大多数人透彻","效率惊人，只是选择性发力","心理稳定性全组最高，不被外界裹挟"],
+    weakness:["可能被误解为懒或不上进","错过需要主动争取的机会","不易被看见，功劳可能被忽视"],
+    bestMatch:"GLSF",bestMatchWhy:"热血大冤种需要你。TA在崩溃的时候全世界都在说「加油」——只有你说「要不要先歇一天」。你不会被TA的眼泪吓到，也不会被TA的热情裹挟。你的稳是TA在风暴里的唯一锚点，而TA的热情偶尔也能让你冰封的嘴角微微上扬。",
+    worstMatch:"GLTN",worstMatchWhy:"科研表演家是你最受不了的类型。TA花三小时做PPT的时候你已经把实验做完了。你看穿了TA所有的表演但你不会说破——你只是在心里默默摇头。TA在你面前特别不自在，因为TA知道你什么都看得见。",
+    radar:[72,95,40,80,60],
+    celeb:"陶渊明 — 如果他是科研人的话",
+    tips:["偶尔主动展示一下你的成果，好酒也怕巷子深","你的清醒是稀缺品，试着分享给迷茫的同门","佛系是选择不是逃避，确保你是前者"],
+    tags:["#深藏不露","#最清醒的人","#四两拨千斤","#躺着比你站着高"]},
+
+  CQTN:{name:"职业混子",emoji:"🫥",accent:"#A0A0A0",tagline:"打卡-摸鱼-下班，三点一线",
+    desc:"你的手表是实验室里最重要的仪器——它负责提醒你五点到了该走了。你对科研的感情已经从「热恋」到「冷战」到「协议离婚」。导师说什么你都回复「好的」然后按自己的节奏来。你的课题进展用一个字概括就是「慢」，但你的精神状态用一个字概括就是「稳」。你可能是全组心理最健康的人——因为你从不把自我价值跟科研挂钩。",
+    powers:["心理健康全组最佳，边界感极强","不内耗，精力管理得很好","能把科研当工作是一种被低估的能力"],
+    weakness:["缺乏发展动力，可能在职业上被边缘化","错过可能改变人生轨迹的成长机会","长期混下去对自己也不公平"],
+    bestMatch:"CLSF",bestMatchWhy:"科研哭包是最有可能让你重新感受到什么的人。TA因为一个实验结果哭得稀里哗啦的时候，你心里会有一丝触动——虽然你不承认。TA让你想起了你曾经也在乎过的东西。你的稳能接住TA的崩溃，TA的真能戳穿你的假装不在乎。",
+    worstMatch:"GLTF",worstMatchWhy:"学术永动机看你准时下班的样子像看一个不可理喻的外星人。你每次背着包往外走的时候都能感受到TA灼热的目光。但你不在乎——你们活在完全不同的价值体系里，TA追求卓越，你追求下班。",
+    radar:[35,88,40,20,30],
+    celeb:"那个准时5点下班的德国同事 — 高效但绝不加班",
+    tips:["既然选择了混，至少混出一个学位来","你的边界感是优点，但偶尔跨出去试试","想想5年后你想在哪里，现在开始准备"],
+    tags:["#职业素养在线","#科研只是过渡","#下班才是人生","#精神状态全组最健康"]},
+
+  CQSF:{name:"实验室小透明",emoji:"👻",accent:"#3B82F6",tagline:"有梦想但不敢说出来",
+    desc:"你在实验室的存在感比超净台上的灰还薄。组会上你坐在角落里记笔记，从来不主动发言。你有很多很好的想法——但它们永远停留在你的脑子里和notebook的最后几页。你不是没有能力，你只是太害怕了：怕说错、怕被笑、怕被关注、怕辜负期待。你最大的敌人不是科研，是那个不敢相信自己的自己。",
+    powers:["观察者视角，看问题往往很准","不引发冲突，团队里最安全的存在","有被严重低估的潜力"],
+    weakness:["极度缺乏自信，不敢争取","害怕被关注，错过展示自己的机会","可能一直被忽视直到毕业"],
+    bestMatch:"CLTF",bestMatchWhy:"快乐课题组长会在组会上说「小透明你怎么看」——虽然这让你心跳加速，但TA问的时候带着笑，不带任何压力。TA是那种会记得你的生日、会在你发朋友圈的时候第一个点赞的人。在TA的温暖里，你会慢慢长出勇气。",
+    worstMatch:"CLTN",worstMatchWhy:"实验室段子手是你的反面——TA占据了所有的注意力和笑声，而你在旁边越来越隐形。TA不是故意忽略你，TA只是太吵了。在TA的光芒下你会更加觉得自己是背景板，这让你更不敢说话。",
+    radar:[40,35,20,50,35],
+    celeb:"罗莎琳德·富兰克林 — DNA的真正发现者，却被历史忽视",
+    tips:["下次有想法的时候，深呼吸然后说出来，最坏的结果也不过是没人回应","找一个小的学术会议练习发言，从小舞台开始","你不需要变成别人，只需要让别人看到你"],
+    tags:["#存在感极低","#内心戏极丰富","#配角心态","#其实你可以的"]},
+
+  CQSN:{name:"科研幽灵",emoji:"💀",accent:"#6B6B6B",tagline:"还活着？大概吧",
+    desc:"你上一次对实验结果有感觉是什么时候？你自己也记不清了。你每天的状态是：人在实验室，魂不知道飘到哪里去了。同事跟你说话你会回应，但你的眼神是空的。你不愤怒也不悲伤，你只是什么都感觉不到了。偶尔半夜会突然清醒三秒钟，想起当年报考研究生时的自己，然后翻个身继续睡。你需要的不是一碗鸡汤，是一个出口。",
+    powers:["已超越世俗烦恼，不会被PUA","自带免疫buff，导师的催促对你无效","某种程度上活得最通透"],
+    weakness:["完全失去驱动力，长期下去影响身心","与周围人越来越脱节","需要认真考虑是继续还是换条路"],
+    bestMatch:"CLTF",bestMatchWhy:"快乐课题组长是你最后一根稻草——不是压垮你的那种，是让你抓住的那种。TA是唯一一个不会因为你的死气沉沉而远离你的人。TA会硬拉你去吃饭、硬拉你去散步，用TA的快乐慢慢融化你的冰。不保证有用，但至少你不是一个人。",
+    worstMatch:"GLTF",worstMatchWhy:"学术永动机的存在让你觉得自己是另一个物种。TA浑身充满能量的样子让你更加觉得自己是一具空壳。你们之间没有冲突，因为你已经没有力气跟任何人冲突了——但TA的存在本身就是一种无声的压力。",
+    radar:[20,60,15,10,15],
+    celeb:"那个传说中毕业三年还在实验室的学长 — 是你吗？",
+    tips:["认真想一想：你是真的不在乎，还是已经麻木了","跟一个信任的人聊聊你的状态，说出来会好很多","如果科研真的不适合你，离开不是失败，是新的开始"],
+    tags:["#已与世界和解","#科研NDE幸存者","#灵魂已先行毕业","#有人还记得我吗"]}
+};
+
+var questions = [
+  {q:"周一早上闹钟响了，你的第一个念头是？",hint:"诚实回答，没人看得到",opts:[
+    {t:"今天有个实验方案想验证，赶紧去",d:{G:3,C:0,F:2,N:0}},{t:"叹口气，但还是准时到了实验室",d:{G:2,C:1,F:0,N:1}},{t:"再躺五分钟…… 五十分钟后出门",d:{G:0,C:2,F:1,N:1}},{t:"认真考虑今天能不能不去",d:{G:0,C:3,F:0,N:2}}]},
+  {q:"导师突然加了一个新课题给你：",hint:"别装，说真话",opts:[
+    {t:"兴奋！新方向意味着新机会",d:{G:3,C:0,F:3,N:0}},{t:"接了，反正多做一个也无所谓",d:{G:2,C:1,F:0,N:1}},{t:"表面答应，心里算着怎么偷工减料",d:{G:0,C:2,F:0,N:2}},{t:"想拒绝但不敢，默默加到待办清单最后",d:{G:0,C:2,F:1,N:1}}]},
+  {q:"晚上十点，实验还没做完：",hint:"你的真实选择",opts:[
+    {t:"做完再走，差这一步了",d:{G:3,C:0,F:2,N:0}},{t:"硬撑，但心里在骂自己效率低",d:{G:2,C:0,F:0,N:2}},{t:"明天再说吧，不差这一晚",d:{G:0,C:3,F:0,N:1}},{t:"纠结半小时到底走不走，最后还是走了",d:{G:0,C:2,F:1,N:1}}]},
+  {q:"组会上你的实验数据被质疑了：",hint:"你的本能反应",opts:[
+    {t:"当场反驳，拿数据说话",d:{L:3,Q:0,T:3,S:0}},{t:"嘴上解释，但下来跟同门吐槽半小时",d:{L:2,Q:0,T:1,S:2}},{t:"沉默，回去默默把实验重做一遍",d:{L:0,Q:3,T:2,S:1}},{t:"低头不说话，散会后躲厕所缓缓",d:{L:0,Q:2,T:0,S:3}}]},
+  {q:"实验室来了新人，你会？",hint:"社交本能测试",opts:[
+    {t:"主动介绍自己，带人逛一圈实验室",d:{L:3,Q:0,T:1,S:0}},{t:"等别人介绍，但聊起来还挺热的",d:{L:2,Q:1,T:0,S:1}},{t:"点个头算打过招呼了",d:{L:0,Q:3,T:2,S:0}},{t:"假装没看见，等对方先来找自己",d:{L:0,Q:2,T:0,S:2}}]},
+  {q:"你在实验室的存在感是：",hint:"别人眼中的你",opts:[
+    {t:"气氛担当，没我实验室安静得像灵堂",d:{L:3,Q:0,T:2,S:0}},{t:"吐槽担当，负责帮大家骂导师",d:{L:2,Q:0,T:0,S:2}},{t:"技术担当，平时不说话但仪器坏了都找我",d:{L:0,Q:3,T:3,S:0}},{t:"隐形人，有人以为我已经毕业了",d:{L:0,Q:2,T:0,S:2}}]},
+  {q:"实验连续失败三次，你现在的状态：",hint:"你的心理弹性",opts:[
+    {t:"冷静排查，列出所有可能的变量逐一排除",d:{T:3,S:0,G:2,C:0}},{t:"烦躁，但咬着牙做第四次",d:{T:2,S:1,G:2,C:0}},{t:"开始怀疑人生，但先吃顿好的缓缓",d:{T:0,S:2,G:0,C:2}},{t:"已经在厕所哭过了 / 想哭但哭不出来",d:{T:0,S:3,G:0,C:1}}]},
+  {q:"审稿人给了一堆 harsh comments：",hint:"你看到邮件那一刻",opts:[
+    {t:"逐条分析，该改的改，该怼的怼",d:{T:3,S:0,G:3,C:0}},{t:"先骂十分钟审稿人，骂完开始改",d:{T:2,S:1,G:1,C:0}},{t:"关掉邮件假装没看到，过两天再说",d:{T:0,S:2,G:0,C:3}},{t:"整个人emo了，觉得自己写的就是垃圾",d:{T:0,S:3,G:0,C:1}}]},
+  {q:"课题方向被证明可能走不通了：",hint:"这是真正的考验",opts:[
+    {t:"果断转向，沉没成本不值得留恋",d:{T:3,S:0,G:2,C:0}},{t:"焦虑，但理性分析后还是选择调整",d:{T:2,S:1,G:1,C:0}},{t:"崩溃，这意味着前面全白做了",d:{T:0,S:3,G:0,C:1}},{t:"无所谓了，反正也不指望这个毕业",d:{T:1,S:1,G:0,C:3}}]},
+  {q:"如果可以重来，你还会选科研吗？",hint:"凌晨三点问自己的那个问题",opts:[
+    {t:"会，科研是我真正想做的事",d:{F:3,N:0,L:1,Q:1}},{t:"大概会，虽然痛苦但还是有成就感",d:{F:2,N:1,L:0,Q:1}},{t:"不好说，可能会试试别的路",d:{F:1,N:2,L:1,Q:1}},{t:"绝对不会，这条路太亏了",d:{F:0,N:3,L:1,Q:0}}]},
+  {q:"看到同门发了一篇好文章：",hint:"你的真实内心活动",opts:[
+    {t:"由衷高兴，也被激励到了",d:{F:3,N:0,L:2,Q:0}},{t:"祝贺，然后偷偷回去加班",d:{F:2,N:0,L:0,Q:3}},{t:"表面祝贺，内心五味杂陈",d:{F:0,N:2,L:1,Q:2}},{t:"无感，发不发跟我没关系",d:{F:0,N:3,L:0,Q:2}}]},
+  {q:"你觉得你的科研生涯最后会怎样？",hint:"最后一题，对自己诚实",opts:[
+    {t:"会做出有价值的成果，我相信",d:{F:3,N:0,L:2,Q:0}},{t:"能顺利毕业就谢天谢地了",d:{F:1,N:2,L:0,Q:1}},{t:"不敢想，走一步算一步",d:{F:0,N:2,L:0,Q:2}},{t:"大概会转行，但这段经历不算浪费",d:{F:1,N:2,L:1,Q:1}}]}
+];
+
+var cur=0, scores={G:0,C:0,L:0,Q:0,T:0,S:0,F:0,N:0};
+var lastCode='',lastResult=null,lastDims=[];
+var colors={G:'#FF5733',C:'#3B82F6',L:'#F59E0B',Q:'#8B5CF6',T:'#1A1A1A',S:'#E74C3C',F:'#2ECC71',N:'#A0A0A0'};
+var radarLabels=['学术产出','抗压指数','社交能力','目标清晰','行动力'];
+
+function goIntro(){cur=0;scores={G:0,C:0,L:0,Q:0,T:0,S:0,F:0,N:0};showScreen('intro')}
+function showScreen(id){document.querySelectorAll('.screen').forEach(function(s){s.classList.remove('active')});document.getElementById('s-'+id).classList.add('active');window.scrollTo(0,0)}
+
+var imagesPreloaded=false;
+function preloadImages(){if(imagesPreloaded)return;imagesPreloaded=true;['GLTF','GLTN','GLSF','GLSN','GQTF','GQTN','GQSF','GQSN','CLTF','CLTN_','CLSF','CLSN','CQTF','CQTN','CQSF','CQSN'].forEach(function(c){var img=new Image();img.src='img/'+c+'.png'})}
+
+function startTest(){cur=0;scores={G:0,C:0,L:0,Q:0,T:0,S:0,F:0,N:0};preloadImages();showScreen('q');buildProgress();showQ()}
+function buildProgress(){document.getElementById('q-progress').innerHTML=questions.map(function(_,i){return '<div class="q-dot" data-i="'+i+'"></div>'}).join('')}
+function updateProgress(){document.querySelectorAll('.q-dot').forEach(function(d,i){d.className='q-dot';if(i<cur)d.classList.add('done');if(i===cur)d.classList.add('now')})}
+
+function showQ(){
+  updateProgress();var q=questions[cur];
+  document.getElementById('q-counter').textContent=(cur+1)+' / '+questions.length;
+  document.getElementById('q-text').textContent=q.q;
+  document.getElementById('q-hint').textContent=q.hint||'';
+  var el=document.getElementById('q-opts');el.innerHTML='';
+  q.opts.forEach(function(o,i){var b=document.createElement('button');b.className='q-opt';b.textContent=o.t;b.style.animation='fadeUp 0.3s ease forwards';b.style.animationDelay=i*0.05+'s';b.style.opacity='0';b.onclick=function(){pick(o.d)};el.appendChild(b)});
+}
+
+function pick(d){Object.keys(d).forEach(function(k){if(scores[k]!==undefined)scores[k]+=d[k]});cur++;if(cur<questions.length)showQ();else calcResult()}
+
+function calcResult(){
+  var dims=[{a:'G',b:'C',labelA:'卷',labelB:'躺'},{a:'L',b:'Q',labelA:'显',labelB:'隐'},{a:'T',b:'S',labelA:'刚',labelB:'脆'},{a:'F',b:'N',labelA:'信',labelB:'虚'}];
+  var code='',dimResults=[];
+  dims.forEach(function(dim){var total=scores[dim.a]+scores[dim.b];var pctA=total>0?Math.round((scores[dim.a]/total)*100):50;var winner=scores[dim.a]>=scores[dim.b]?dim.a:dim.b;code+=winner;dimResults.push({letterA:dim.a,letterB:dim.b,labelA:dim.labelA,labelB:dim.labelB,pctA:pctA,pctB:100-pctA,winner:winner})});
+  var result=types[code];if(!result){console.error('No type for',code);return}
+  lastCode=code;lastResult=result;lastDims=dimResults;
+  showScreen('r');renderResult(code,result,dimResults);
+}
+
+function drawRadar(canvasId,data){
+  var canvas=document.getElementById(canvasId);if(!canvas)return;
+  var ctx=canvas.getContext('2d');
+  var W=canvas.width,H=canvas.height,cx=W/2,cy=H/2+6,R=Math.min(W,H)/2-30;
+  ctx.clearRect(0,0,W,H);
+  var n=data.length,step=Math.PI*2/n,startAngle=-Math.PI/2;
+  // grid
+  [0.2,0.4,0.6,0.8,1].forEach(function(s){
+    ctx.beginPath();for(var i=0;i<n;i++){var a=startAngle+i*step;var x=cx+R*s*Math.cos(a);var y=cy+R*s*Math.sin(a);i===0?ctx.moveTo(x,y):ctx.lineTo(x,y)}
+    ctx.closePath();ctx.strokeStyle='rgba(0,0,0,0.06)';ctx.lineWidth=0.5;ctx.stroke();
+  });
+  // axes
+  for(var i=0;i<n;i++){var a=startAngle+i*step;ctx.beginPath();ctx.moveTo(cx,cy);ctx.lineTo(cx+R*Math.cos(a),cy+R*Math.sin(a));ctx.strokeStyle='rgba(0,0,0,0.06)';ctx.lineWidth=0.5;ctx.stroke()}
+  // data fill
+  ctx.beginPath();
+  for(var i=0;i<n;i++){var a=startAngle+i*step;var v=data[i]/100;var x=cx+R*v*Math.cos(a);var y=cy+R*v*Math.sin(a);i===0?ctx.moveTo(x,y):ctx.lineTo(x,y)}
+  ctx.closePath();ctx.fillStyle='rgba(255,87,51,0.12)';ctx.fill();ctx.strokeStyle='#FF5733';ctx.lineWidth=1.5;ctx.stroke();
+  // dots
+  for(var i=0;i<n;i++){var a=startAngle+i*step;var v=data[i]/100;ctx.beginPath();ctx.arc(cx+R*v*Math.cos(a),cy+R*v*Math.sin(a),3,0,Math.PI*2);ctx.fillStyle='#FF5733';ctx.fill()}
+  // labels
+  ctx.fillStyle='#6B6B6B';ctx.font='11px Noto Sans SC, sans-serif';ctx.textAlign='center';ctx.textBaseline='middle';
+  for(var i=0;i<n;i++){var a=startAngle+i*step;var lx=cx+(R+18)*Math.cos(a);var ly=cy+(R+18)*Math.sin(a);ctx.fillText(radarLabels[i]+' '+data[i],lx,ly)}
+}
+
+function renderResult(code,r,dims){
+  var card=document.getElementById('r-card');card.style.animation='fadeUp 0.5s ease';
+  var imgFile=code==='CLTN'?'CLTN_':code;
+  var bestType=types[r.bestMatch];
+  var worstType=types[r.worstMatch];
+  var bestImg=r.bestMatch==='CLTN'?'CLTN_':r.bestMatch;
+  var worstImg=r.worstMatch==='CLTN'?'CLTN_':r.worstMatch;
+
+  card.innerHTML='<div class="r-bar" style="background:'+r.accent+'"></div>'+
+    '<img class="r-portrait" src="img/'+imgFile+'.png" alt="'+r.name+'" onerror="this.style.display=\'none\'">'+
+    '<div class="r-code" style="color:'+r.accent+'">'+code+'</div>'+
+    '<div class="r-name">'+r.name+'</div>'+
+    '<div class="r-tagline">'+r.tagline+'</div>'+
+    '<div class="r-divider"></div>'+
+    '<div class="r-desc">'+r.desc+'</div>'+
+    // Dimension bars
+    '<div class="r-dims">'+dims.map(function(d){return '<div class="r-dim-row"><div class="r-dim-label" style="color:'+colors[d.letterA]+'">'+d.labelA+'</div><div class="r-dim-track"><div class="r-dim-fill left" style="width:'+d.pctA+'%;background:'+colors[d.letterA]+'"></div></div><div class="r-dim-track"><div class="r-dim-fill right" style="width:'+d.pctB+'%;background:'+colors[d.letterB]+'"></div></div><div class="r-dim-label" style="color:'+colors[d.letterB]+'">'+d.labelB+'</div></div>'}).join('')+'</div>'+
+    // Powers & Weakness
+    '<div class="r-section"><div class="r-section-title"><span class="r-section-icon">🧬</span> 人格画像</div>'+
+    '<div class="r-pw">'+
+    '<div class="r-pw-col power"><div class="r-pw-label">超能力</div>'+r.powers.map(function(p){return '<div class="r-pw-item">'+p+'</div>'}).join('')+'</div>'+
+    '<div class="r-pw-col weak"><div class="r-pw-label">致命弱点</div>'+r.weakness.map(function(w){return '<div class="r-pw-item">'+w+'</div>'}).join('')+'</div>'+
+    '</div></div>'+
+    // Radar chart
+    '<div class="r-section"><div class="r-section-title"><span class="r-section-icon">📊</span> 科研生存指数</div>'+
+    '<div class="r-radar-wrap"><canvas id="radarCanvas" width="300" height="280"></canvas></div></div>'+
+    // Relationships
+    '<div class="r-section"><div class="r-section-title"><span class="r-section-icon">💞</span> 人格关系</div>'+
+    '<div class="r-rel">'+
+    '<div class="r-rel-card"><div class="r-rel-type best">最佳搭档</div><div class="r-rel-name">'+r.bestMatch+' '+bestType.name+'</div><div class="r-rel-why">'+r.bestMatchWhy+'</div></div>'+
+    '<div class="r-rel-card"><div class="r-rel-type worst">天生冤家</div><div class="r-rel-name">'+r.worstMatch+' '+worstType.name+'</div><div class="r-rel-why">'+r.worstMatchWhy+'</div></div>'+
+    '</div></div>'+
+    // Tips
+    '<div class="r-section"><div class="r-section-title"><span class="r-section-icon">📈</span> 成长建议</div>'+
+    '<div class="r-tips-list">'+r.tips.map(function(t,i){return '<div class="r-tip"><span class="r-tip-num">'+(i+1)+'</span>'+t+'</div>'}).join('')+'</div></div>'+
+    // Celebrity
+    '<div class="r-section"><div class="r-section-title"><span class="r-section-icon">🎭</span> 名人匹配</div>'+
+    '<div class="r-celeb">'+r.celeb+'</div></div>'+
+    // Tags
+    '<div class="r-tags" style="margin-top:28px">'+r.tags.map(function(t){return '<span class="r-tag">'+t+'</span>'}).join('')+'</div>'+
+    '<div class="r-brand">PHDTI · LabBricker · 懂科研，更懂你</div>';
+
+  var btns=document.getElementById('r-btns');btns.style.animation='fadeUp 0.5s ease 0.15s';btns.style.opacity='0';btns.style.animationFillMode='forwards';
+
+  setTimeout(function(){drawRadar('radarCanvas',r.radar)},100);
+}
+
+/* SHARE */
+function shareResult(){
+  if(!lastResult)return;var r=lastResult,code=lastCode,dims=lastDims;
+  var imgFile=code==='CLTN'?'CLTN_':code;
+  var sc=document.getElementById('share-card');
+  sc.innerHTML='<img style="width:180px;max-height:240px;object-fit:contain;margin:0 auto 16px;display:block;border-radius:12px" src="img/'+imgFile+'.png" alt="'+r.name+'">'+
+    '<div style="color:'+r.accent+';font-family:Playfair Display,serif;font-size:36px;font-weight:800;letter-spacing:3px;margin-bottom:2px">'+code+'</div>'+
+    '<div style="font-size:17px;color:#6B6B6B;font-weight:600;margin-bottom:4px">'+r.name+'</div>'+
+    '<div style="font-size:13px;color:#A0A0A0;font-style:italic;margin-bottom:16px">'+r.tagline+'</div>'+
+    '<div style="width:40px;height:2px;background:#D4D4D4;margin:0 auto 16px"></div>'+
+    '<div style="margin-bottom:20px">'+dims.map(function(d){return '<div style="display:flex;align-items:center;gap:8px;margin-bottom:10px"><div style="font-size:11px;width:24px;text-align:center;font-weight:600;color:'+colors[d.letterA]+'">'+d.labelA+'</div><div style="flex:1;height:5px;background:#F0EDE8;border-radius:3px;position:relative;overflow:hidden"><div style="position:absolute;top:0;left:0;height:100%;width:'+d.pctA+'%;background:'+colors[d.letterA]+';border-radius:3px"></div></div><div style="flex:1;height:5px;background:#F0EDE8;border-radius:3px;position:relative;overflow:hidden"><div style="position:absolute;top:0;right:0;height:100%;width:'+d.pctB+'%;background:'+colors[d.letterB]+';border-radius:3px"></div></div><div style="font-size:11px;width:24px;text-align:center;font-weight:600;color:'+colors[d.letterB]+'">'+d.labelB+'</div></div>'}).join('')+'</div>'+
+    '<div style="display:flex;flex-wrap:wrap;justify-content:center;gap:5px;margin-bottom:20px">'+r.tags.map(function(t){return '<span style="font-size:11px;padding:4px 10px;border-radius:16px;background:#F5F3EF;color:#6B6B6B">'+t+'</span>'}).join('')+'</div>'+
+    '<div style="font-size:11px;color:#D4D4D4;letter-spacing:1px">PHDTI · LabBricker · 懂科研，更懂你</div>';
+  sc.style.left='0';sc.style.opacity='1';
+  setTimeout(function(){html2canvas(sc,{scale:2,backgroundColor:'#FFFFFF',useCORS:true,allowTaint:true,width:375,windowWidth:375}).then(function(canvas){sc.style.left='-9999px';var dataUrl=canvas.toDataURL('image/png');document.getElementById('share-img').src=dataUrl;document.getElementById('share-overlay').classList.add('active');window._shareDataUrl=dataUrl}).catch(function(err){sc.style.left='-9999px';console.error(err);alert('生成图片失败，请截屏分享')})},300);
+}
+function closeShare(e){if(e&&e.target!==e.currentTarget)return;document.getElementById('share-overlay').classList.remove('active')}
+function downloadShare(){if(!window._shareDataUrl)return;var a=document.createElement('a');a.href=window._shareDataUrl;a.download='PHDTI-'+lastCode+'.png';document.body.appendChild(a);a.click();document.body.removeChild(a)}
+</script>
+</body>
+</html>
